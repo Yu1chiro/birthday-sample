@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Birthday Seventeen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        .sparkle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: sparkleAnimation 2s ease-in-out infinite;
+        }
+        
+        @keyframes sparkleAnimation {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        
+        .notification-enter {
+            animation: slideInFromTop 0.3s ease-out;
+        }
+        
+        .notification-exit {
+            animation: slideOutToTop 0.3s ease-in;
+        }
+        
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutToTop {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 flex items-center justify-center p-4">
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50"></div>
+
+    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 w-full max-w-md shadow-2xl border border-white/20">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-white mb-2">Birthday Seventeen</h1>
+            <p class="text-white/80 mb-8">Masuk untuk melanjutkan</p>
+            
+            <button id="googleLoginBtn" class="w-full bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center space-x-3 shadow-lg">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span id="loginText">Masuk dengan Google</span>
+                <div id="loadingSpinner" class="hidden">
+                    <svg class="animate-spin h-5 w-5 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            </button>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDexF7vJsXLz3VYEGdIqsaHDcqZVdxSS54",
+            authDomain: "birthday-seventeen.firebaseapp.com",
+            projectId: "birthday-seventeen",
+            storageBucket: "birthday-seventeen.firebasestorage.app",
+            messagingSenderId: "146029137165",
+            appId: "1:146029137165:web:a26f8433c68b77ef797444",
+            measurementId: "G-9EE23NP3TE"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Google Auth Provider
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+
+        // Elements
+        const loginBtn = document.getElementById('googleLoginBtn');
+        const loginText = document.getElementById('loginText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const notificationContainer = document.getElementById('notificationContainer');
+
+        // Notification System
+        function showNotification(message, type = 'error') {
+            const notification = document.createElement('div');
+            
+            const typeStyles = {
+                success: 'bg-green-500 text-white',
+                error: 'bg-red-500 text-white',
+                warning: 'bg-yellow-500 text-black',
+                info: 'bg-blue-500 text-white'
+            };
+            
+            const icons = {
+                success: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`,
+                error: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`,
+                warning: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`,
+                info: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>`
+            };
+            
+            notification.className = `notification-enter flex items-center space-x-3 px-6 py-4 rounded-lg shadow-lg max-w-md ${typeStyles[type]} border border-white/20 backdrop-blur-sm`;
+            
+            notification.innerHTML = `
+                <div class="flex-shrink-0">
+                    ${icons[type]}
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium">${message}</p>
+                </div>
+                <button class="flex-shrink-0 ml-4 hover:opacity-70" onclick="this.parentElement.remove()">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            `;
+            
+            notificationContainer.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.classList.remove('notification-enter');
+                    notification.classList.add('notification-exit');
+                    setTimeout(() => {
+                        if (notification.parentElement) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+
+        // Login function
+        async function loginWithGoogle() {
+            try {
+                // Show loading state
+                loginBtn.classList.add('loading');
+                loginText.textContent = 'Memproses...';
+                loadingSpinner.classList.remove('hidden');
+
+                // Sign in with popup
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                
+                // Get ID token
+                const idToken = await user.getIdToken();
+                
+                // Prepare user data
+                const userData = {
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    picture: user.photoURL,
+                    lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                };
+
+                // Save to Realtime Database
+                await database.ref(`users/${user.uid}`).set(userData);
+
+                // Send token to backend for cookie creation
+                const response = await fetch('/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ idToken })
+                });
+
+                const responseData = await response.json();
+
+                if (response.ok) {
+                    showNotification('Login berhasil! Mengalihkan ke dashboard...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    // Handle different error types
+                    switch (responseData.code) {
+                        case 'EMAIL_NOT_ALLOWED':
+                            showNotification(`Akses ditolak! Email ${responseData.email} tidak memiliki izin untuk masuk ke sistem ini.`, 'error');
+                            break;
+                        case 'TOKEN_EXPIRED':
+                            showNotification('Token kedaluwarsa. Silakan coba lagi.', 'warning');
+                            break;
+                        case 'TOKEN_REVOKED':
+                            showNotification('Token tidak valid. Silakan coba lagi.', 'warning');
+                            break;
+                        default:
+                            showNotification(responseData.error || 'Gagal membuat sesi login', 'error');
+                    }
+                    
+                    // Sign out the user since login failed
+                    await auth.signOut();
+                }
+
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                // Handle Firebase Auth errors
+                switch (error.code) {
+                    case 'auth/popup-closed-by-user':
+                        showNotification('Login dibatalkan oleh pengguna.', 'info');
+                        break;
+                    case 'auth/popup-blocked':
+                        showNotification('Popup diblokir oleh browser. Silakan izinkan popup untuk login.', 'warning');
+                        break;
+                    case 'auth/network-request-failed':
+                        showNotification('Gagal terhubung ke internet. Periksa koneksi Anda.', 'error');
+                        break;
+                    default:
+                        showNotification('Gagal masuk: ' + (error.message || 'Terjadi kesalahan yang tidak diketahui'), 'error');
+                }
+            } finally {
+                // Reset button state
+                loginBtn.classList.remove('loading');
+                loginText.textContent = 'Masuk dengan Google';
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        // Event listeners
+        loginBtn.addEventListener('click', loginWithGoogle);
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // User is signed in, check if session exists
+                try {
+                    const response = await fetch('/check-session');
+                    if (response.ok) {
+                        showNotification('Anda sudah login. Mengalihkan ke dashboard...', 'info');
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1500);
+                    }
+                } catch (error) {
+                    console.log('No existing session');
+                }
+            }
+        });
+
+        // Add some interactive sparkles
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => {
+                sparkle.remove();
+            }, 2000);
+        }
+
+        // Create sparkles periodically
+        setInterval(createSparkle, 3000);
+    </script>
+</body>
+</html>

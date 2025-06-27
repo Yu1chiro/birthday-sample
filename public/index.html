@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ersya Fely | Sweet Seventeen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="shortcut icon" href="/img/icon.jpg" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="bg-beige-50 overflow-x-hidden">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 z-50 gradient-beige flex items-center justify-center">
+        <div class="text-center">
+            <div class="relative mb-8">
+                <img src="/img/load.png"
+                    class="w-24 h-24 border-4 border-beige-300 border-t-beige-600 rounded-full mx-auto"></img>
+
+            </div>
+            <h2 class="dancing-script text-3xl text-beige-700 mb-2">Loading...</h2>
+            <p class="text-beige-600">Menyiapkan undangan spesial</p>
+        </div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen"
+        class="fixed overflow-x-hidden inset-0 z-40 gradient-beige flower-pattern flex items-center justify-center opacity-0">
+        <div class="text-center p-8 bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl max-w-md mx-4">
+            <div class="relative mb-6">
+                <h1 class="dancing-script text-5xl text-beige-700 mb-2">Sweet Seventeen</h1>
+                <div class="absolute -top-4 -right-4">
+                    <span class="text-2xl">✨</span>
+                </div>
+                <div class="absolute -bottom-2 -left-4">
+                    <span class="text-xl">🌸</span>
+                </div>
+            </div>
+            <h2 class="text-2xl font-semibold text-beige-800 mb-4">Ersya Fely Birthday</h2>
+            <p class="text-beige-600 mb-6">Kamu diundang untuk merayakan hari istimewa</p>
+            <button id="openInvitation"
+                class="bg-beige-300 hover:bg-beige-400 text-beige-800 font-semibold py-3 px-8 rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg">
+                Buka Undangan 💖
+            </button>
+        </div>
+    </div>
+
+    <!-- Music Control -->
+    <div class="music-control" id="musicControl">
+        <span id="musicIcon">🎵</span>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="opacity-0 overflow-x-hidden">
+        <!-- Hero Section -->
+        <section
+            class="min-h-screen gradient-beige flower-pattern flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0">
+                <div class="sparkle" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+                <div class="sparkle" style="top: 60%; left: 80%; animation-delay: 1s;"></div>
+                <div class="sparkle" style="top: 40%; left: 20%; animation-delay: 0.5s;"></div>
+                <div class="sparkle" style="top: 80%; left: 70%; animation-delay: 1.5s;"></div>
+            </div>
+
+            <div class="text-center z-10 hero-content">
+                <div class="mb-8 p-5">
+                    <div class="mx-auto rounded-lg overflow-hidden shadow-2xl bg-white p-3 photo-frame">
+                        <img src="/img/icon.jpg" loading="lazy" class="gallery-item fade-in max-w-full h-auto bg-beige-200 rounded-lg" alt="">
+                     <div class="gallery-overlay"></div>
+                    </div>
+                </div>
+                <h1 class="dancing-script text-6xl md:text-8xl text-beige-700 mb-4 main-title">Sweet Seventeen</h1>
+                <h2 class="text-3xl md:text-4xl font-bold text-beige-800 mb-6 birthday-name">Ersya Fely</h2>
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 inline-block shadow-xl event-details">
+                    <p class="text-beige-700 text-lg mb-2">📅 Minggu, 17 Juli 2025</p>
+                    <p class="text-beige-700 text-lg mb-2">⏰ 18:00 WIB</p>
+                    <p class="text-beige-700 text-lg">📍Hotel Puri Saron Baruna Beach Cottages</p>
+                </div>
+                 <div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                <div class="heart-float" style="left: 10%; top: 20%; animation-delay: 0s;">❤</div>
+                <div class="heart-float" style="left: 80%; top: 30%; animation-delay: 1s;">❤</div>
+                <div class="heart-float" style="left: 30%; top: 70%; animation-delay: 2s;">❤</div>
+                <div class="heart-float" style="left: 60%; top: 15%; animation-delay: 3s;">❤</div>
+                <div class="heart-float" style="left: 90%; top: 60%; animation-delay: 4s;">❤</div>
+            </div>
+            </div>
+
+        </section>
+
+        <!-- Presensi Section -->
+        <section data-aos="zoom-in" data-aos-duration="2000" class="py-16 gradient-beige">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div class="text-center mb-12 presensi-header">
+                    <h2 class="dancing-script text-4xl text-beige-700 mb-4">Konfirmasi Kehadiran</h2>
+                    <div class="w-20 h-1 bg-beige-600 mx-auto rounded-full"></div>
+                </div>
+                <div class="bg-white rounded-3xl p-8 shadow-xl presensi-form">
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block text-beige-700 font-semibold mb-2">Nama Lengkap</label>
+                            <input type="text"
+                                class="w-full p-3 border-2 border-beige-200 rounded-xl focus:border-beige-400 focus:outline-none"
+                                placeholder="Masukkan nama lengkap">
+                        </div>
+                        <div>
+                            <label class="block text-beige-700 font-semibold mb-2">Konfirmasi Kehadiran</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="attendance" value="hadir" class="mr-2">
+                                    <span class="text-beige-700">Hadir</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="attendance" value="tidak" class="mr-2">
+                                    <span class="text-beige-700">Tidak Hadir</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-beige-700 font-semibold mb-2">Jumlah Tamu</label>
+                            <select
+                                class="w-full p-3 border-2 border-beige-200 rounded-xl focus:border-beige-400 focus:outline-none">
+                                <option>1 Orang</option>
+                                <option>2 Orang</option>
+                                <option>3 Orang</option>
+                                <option>4+ Orang</option>
+                            </select>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-beige-300  text-beige-800 font-semibold py-3 rounded-xl transform hover:scale-105 transition-all duration-300">
+                            Konfirmasi 💌
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <!-- Maps Section -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div class="text-center mb-12 maps-header">
+                    <h2 class="dancing-script text-4xl text-beige-700 mb-4">Lokasi Acara</h2>
+                    <div class="w-20 h-1 bg-beige-300 mx-auto rounded-full"></div>
+                </div>
+                <div class="bg-beige-50 rounded-3xl p-8 shadow-lg maps-content">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-semibold text-beige-800 mb-2">Hotel Puri Saron Baruna Beach Cottages
+                        </h3>
+                        <p class="text-beige-600 mb-4">lovina beach Singaraja, Pemaron, Kec. Buleleng, Kabupaten
+                            Buleleng, Bali 81119</p>
+                    </div>
+                    <div class="overflow-hidden rounded-2xl mb-6" style="height: 300px;">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3008.5494901914376!2d115.05447837358669!3d-8.133466981426118!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd19a576da335d9%3A0x72fc005f8296b7ae!2sHotel%20Puri%20Saron%20Baruna%20Beach%20Cottages!5e1!3m2!1sid!2sid!4v1751035898803!5m2!1sid!2sid"
+                            class="w-full h-full border-0" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="https://maps.google.com" target="_blank"
+                            class="inline-block bg-beige-300 text-beige-800 font-semibold py-3 px-8 rounded-xl transform hover:scale-105 transition-all duration-300">
+                            Buka Google Maps
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Ucapan Section -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div class="text-center mb-12 ucapan-header">
+                    <h2 class="dancing-script text-4xl text-beige-700 mb-4">Ucapan & Doa</h2>
+                    <div class="w-20 h-1 bg-beige-300 mx-auto rounded-full"></div>
+                </div>
+                <div class="bg-beige-50 rounded-3xl p-8 shadow-lg ucapan-form">
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block text-beige-700 font-semibold mb-2">Nama</label>
+                            <input type="text"
+                                class="w-full p-3 border-2 border-beige-200 rounded-xl focus:border-beige-400 focus:outline-none"
+                                placeholder="Nama kamu">
+                        </div>
+                        <div>
+                            <label class="block text-beige-700 font-semibold mb-2">Ucapan & Doa Terbaik</label>
+                            <textarea rows="4"
+                                class="w-full p-3 border-2 border-beige-200 rounded-xl focus:border-beige-400 focus:outline-none"
+                                placeholder="Tulis ucapan dan doa terbaik untuk Rushia..."></textarea>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-beige-300 text-beige-800 font-semibold py-3 rounded-xl transform hover:scale-105 transition-all duration-300">
+                            Kirim Ucapan 💌
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Sample Wishes -->
+                <div data-aos="fade-right" data-aos-duration="2000" class="mt-12 space-y-4 ucapan-list">
+
+                </div>
+            </div>
+        </section>
+        <!-- Gift/RSVP Section -->
+        <section class="py-16 gradient-beige">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <!-- Judul "Birthday Gift" (tetap ada) -->
+                <div class="text-center mb-12 gift-header">
+                    <h2 class="dancing-script text-4xl text-beige-700 mb-4">Birthday Gift</h2>
+                    <p class="text-beige-700 text-lg">Kami menerima pemberian hadiah berupa :</p>
+                    <div class="w-20 h-1 bg-beige-600 mx-auto rounded-full"></div>
+                </div>
+
+                <!-- Hanya emoji kado + amplop (tanpa teks/rekening) -->
+                <div class="bg-white rounded-3xl p-8 shadow-xl text-center">
+                    <div class="flex justify-center space-x-8 text-8xl py-8">
+                        <span>🎁</span>
+                        <span>💌</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- gallery -->
+        <section class="py-8 sm:py-12 lg:py-16 bg-amber-50 relative flower-pattern">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-8 sm:mb-12 fade-in">
+                    <h2 class="text-3xl sm:text-4xl dancing-script font-bold mb-4 text-amber-800">Gallery</h2>
+                    <div class="w-16 sm:w-24 h-1 mx-auto rounded-full bg-amber-300"></div>
+                </div>
+
+                <div class="gallery-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 fade-in">
+                    <!-- Gallery Item 1 - With Image -->
+                    <div data-aos="fade-left" data-aos-duration="2000" class="gallery-item aspect-square">
+                        <img src="/img/icon.jpg" alt="Gallery Image 1" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-search-plus text-2xl sm:text-3xl text-white"></i>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Item 2 - With Image -->
+                    <div data-aos="fade-right" data-aos-duration="2000" class="gallery-item aspect-square">
+                        <img src="/img/primary.jpg" alt="Gallery Image 2" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="fas fa-search-plus text-2xl sm:text-3xl text-white"></i>
+                        </div>
+                    </div>
+                    <!-- more -->
+                </div>
+            </div>
+
+            <!-- Decorative elements -->
+            <div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                <div class="heart-float" style="left: 10%; top: 20%; animation-delay: 0s;">❤</div>
+                <div class="heart-float" style="left: 80%; top: 30%; animation-delay: 1s;">❤</div>
+                <div class="heart-float" style="left: 30%; top: 70%; animation-delay: 2s;">❤</div>
+                <div class="heart-float" style="left: 60%; top: 15%; animation-delay: 3s;">❤</div>
+                <div class="heart-float" style="left: 90%; top: 60%; animation-delay: 4s;">❤</div>
+            </div>
+        </section>
+        <!-- Footer -->
+        <footer class="py-12 gradient-beige text-center">
+            <div class="container mx-auto px-4">
+                <div class="mb-6">
+                    <h3 class="dancing-script text-3xl text-beige-700 mb-2">Thank You</h3>
+                    <p class="text-beige-600">Terima kasih atas kehadiran dan doa terbaik kalian</p>
+                </div>
+                <div class="text-beige-500 text-sm">
+                    <p>Made with 💖 for Rushia's Sweet Seventeen</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop>
+        <source src="see.mp3" type="audio/mpeg">
+    </audio>
+    <script src="/JS/present.js"></script>
+    <script src="/JS/wish1.js"></script>
+    <script src="/JS/main.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+    AOS.init({
+        once: true
+    });
+</script>
+
+</body>
+
+</html>
