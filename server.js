@@ -109,7 +109,7 @@ app.post('/signin', async (req, res) => {
     const userRecord = await admin.auth().getUser(uid);
     
     // Check if email is allowed
-    const allowedEmail = 'Evsyafely@gmail.com';
+    const allowedEmail = 'evsyafely@gmail.com';
     if (userRecord.email !== allowedEmail) {
       return res.status(403).json({ 
         error: 'Access Denied! Unauthorized email, please contact developer',
