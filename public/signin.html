@@ -202,7 +202,7 @@
                 const responseData = await response.json();
 
                 if (response.ok) {
-                    showNotification('Login berhasil! Mengalihkan ke dashboard...', 'success');
+                    showNotification(`Hello ${responseData.email} ! please waiting for redirecting to dashboard!`, 'success');
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1500);
@@ -210,7 +210,7 @@
                     // Handle different error types
                     switch (responseData.code) {
                         case 'EMAIL_NOT_ALLOWED':
-                            showNotification(`Akses ditolak! Email ${responseData.email} tidak memiliki izin untuk masuk ke sistem ini.`, 'error');
+                            showNotification(`Access Denied for ${responseData.email} Unauthorized email!`);
                             break;
                         case 'TOKEN_EXPIRED':
                             showNotification('Token kedaluwarsa. Silakan coba lagi.', 'warning');
